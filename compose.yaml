@@ -1,0 +1,21 @@
+services:
+  cache:
+    build: .
+    ports:
+      - "127.0.0.1:6379:6379"
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      PYTHONDONTWRITEBYTECODE: "1"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import socket; s=socket.create_connection(('127.0.0.1',6379),2); s.settimeout(2); s.sendall(b'*1\\r\\n'+bytes([36])+b'4\\r\\nPING\\r\\n'); assert s.makefile('rb').readline()==b'+PONG\\r\\n'; s.close()"
+      interval: 10s
+      timeout: 3s
+      retries: 3

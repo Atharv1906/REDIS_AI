@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f7f2">
+  <meta name="description" content="An interactive, browser-local cache playground. Explore keys, expiration, and cache hits without a setup.">
+  <title>Ember — a little cache. a lot of possibility.</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23e43b2e'/%3E%3Cpath d='m7 12 9-5 9 5-9 5Zm0 5 9 5 9-5M7 22l9 5 9-5' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script src="cache.js" defer></script>
+  <script src="llm.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#" aria-label="Ember home"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>ember<span class="brand-dot">.</span></a>
+    <button class="menu-toggle" aria-expanded="false" aria-controls="navigation" type="button">Menu <span aria-hidden="true">☰</span></button>
+    <nav id="navigation" aria-label="Main navigation">
+      <a href="#playground">Playground</a><a href="#how-it-works">How it works</a><a href="#about">The project <span aria-hidden="true">↗</span></a>
+    </nav>
+    <a class="button button-dark header-cta" href="#playground">Start building <span aria-hidden="true">↗</span></a>
+  </header>
+
+  <main>
+    <section class="hero shell" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="status-dot"></span> SMALL CACHE. BIG POSSIBILITIES.</div>
+        <h1 id="hero-title">Less waiting.<br>More <span>building.</span></h1>
+        <p class="hero-description">Meet your data in the fast lane. A tiny, hands-on cache playground for turning “what if” into “it works.”</p>
+        <div class="hero-actions"><a class="button button-red" href="#playground">Try the playground <span aria-hidden="true">↗</span></a><a class="text-link" href="#how-it-works">See how it works <span aria-hidden="true">↓</span></a></div>
+        <div class="hero-note"><span aria-hidden="true">✓</span> No install <span aria-hidden="true">✓</span> No account <span aria-hidden="true">✓</span> Just your browser</div>
+      </div>
+      <div class="hero-art" aria-label="Illustration of an application connecting to an in-memory cache">
+        <div class="art-grid"></div>
+        <div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
+        <div class="art-label label-top"><span class="status-dot"></span> IDEAS IN. POSSIBILITIES OUT.</div>
+        <div class="art-node node-app"><span class="node-icon" aria-hidden="true">⌘</span><div>Your next idea<small>application</small></div></div>
+        <div class="connection-line"></div>
+        <div class="cache-cube"><div class="cube-layer layer-one"></div><div class="cube-layer layer-two"></div><div class="cube-layer layer-three"></div><span class="cube-spark" aria-hidden="true">✦</span></div>
+        <div class="art-node node-cache"><span class="little-code" aria-hidden="true">{ }</span><div>Right here. In memory.<small>ready when you are</small></div><span class="live-pill">LIVE</span></div>
+        <div class="floating-command"><span>GET</span> your:next:idea <b>↵</b></div>
+        <div class="art-caption"><span aria-hidden="true">↳</span> Less friction between you and your data.</div>
+      </div>
+    </section>
+
+    <div class="feature-strip shell" aria-label="Project capabilities"><span>BUILT TO KEEP THINGS SIMPLE</span><div><b aria-hidden="true">↔</b> Key-value storage</div><div><b aria-hidden="true">◷</b> Automatic expiration</div><div><b aria-hidden="true">⤴</b> LRU eviction</div><div><b aria-hidden="true">⌘</b> Redis-style commands</div></div>
+
+    <section class="playground-section shell" id="playground" aria-labelledby="playground-title">
+      <div class="section-heading"><div><div class="eyebrow">YOUR LITTLE DATA LAB</div><h2 id="playground-title">Don't just read it. <span>Run it.</span></h2><p>Set a key. Get it back. Watch the cache do its thing.</p></div><div class="local-badge"><span class="status-dot"></span> Browser-local demo <span class="help-badge" title="This playground runs in this tab, not on the Python server.">i</span></div></div>
+      <div class="workspace">
+        <div class="workspace-bar"><div><span class="workspace-icon" aria-hidden="true">▤</span><strong>My first cache</strong><span class="workspace-tag">sandbox</span></div><button id="reset-demo" class="quiet-button" type="button"><span aria-hidden="true">↻</span> Reset demo</button></div>
+        <div class="stats-grid" aria-label="Live cache metrics">
+          <div class="stat"><span>Keys in memory</span><div><strong id="metric-keys">0</strong><small>of 50 available</small></div></div>
+          <div class="stat"><span>Cache hit rate</span><div><strong id="metric-rate">—</strong><small id="metric-reads">no reads yet</small></div></div>
+          <div class="stat"><span>Payload size</span><div><strong id="metric-memory">0 B</strong><small>UTF-8 keys + values</small></div></div>
+          <div class="stat"><span>Environment</span><div class="environment-value"><span class="status-dot"></span><strong>Local</strong><small>this tab only</small></div></div>
+        </div>
+        <div class="workspace-body">
+          <section class="terminal-panel" aria-labelledby="terminal-title">
+            <div class="panel-heading"><h3 id="terminal-title"><span aria-hidden="true">›_</span> Command console</h3><span>REDIS-STYLE</span></div>
+            <div id="terminal-output" class="terminal-output" role="log" aria-label="Command results" aria-relevant="additions"></div>
+            <form id="command-form" class="command-form">
+              <label for="command-input" class="sr-only">Redis-style command</label><span class="prompt" aria-hidden="true">›</span>
+              <input id="command-input" name="command" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="8192" placeholder='SET hello "world"' aria-describedby="command-help" required>
+              <button type="button" id="translate-command" class="run-button alt" aria-label="Translate command">Convert</button>
+              <button type="submit" class="run-button" aria-label="Run command">↵</button>
+            </form>
+            <div class="terminal-footer"><span id="command-help">Enter to run <span aria-hidden="true">·</span> ↑ ↓ for history</span><button id="clear-console" type="button">Clear console</button></div>
+          </section>
+          <section class="keys-panel" aria-labelledby="keys-title">
+            <div class="panel-heading"><h3 id="keys-title">Explore your keys <span id="key-count" class="count-badge">0</span></h3><label class="sr-only" for="key-search">Filter keys</label><input id="key-search" type="search" placeholder="Find a key…" autocomplete="off"></div>
+            <div class="table-wrap"><table><thead><tr><th scope="col">KEY / VALUE</th><th scope="col">EXPIRES IN</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead><tbody id="key-rows"></tbody></table><p id="empty-state" class="empty-state" hidden>No keys yet. Make something with SET.</p></div>
+            <div class="keys-footer"><span class="status-dot"></span> In-memory. Ephemeral. All yours.</div>
+          </section>
+        </div>
+        <div class="quick-commands"><span>GIVE IT A TRY</span><button type="button" data-command='SET hello "world"'>SET hello "world" <span>↗</span></button><button type="button" data-command="GET hello">GET hello <span>↗</span></button><button type="button" data-command='SET fleeting "catch me" EX 10'>Try a 10s TTL <span>↗</span></button><button type="button" data-command='SSET "how do I reset my password" "Visit /account/reset and follow the email link."'>Try SSET <span>↗</span></button><button type="button" data-command='SGET "I forgot my password"'>Try SGET <span>↗</span></button><button type="button" data-command="HELP">All commands <span>↗</span></button></div>
+      </div>
+      <p class="playground-note"><span aria-hidden="true">ⓘ</span> A real interaction, a local simulation. Data lives in this tab and clears on refresh. Not connected to the Python server.</p>
+    </section>
+
+    <section class="how-section shell" id="how-it-works" aria-labelledby="how-title">
+      <div class="section-heading"><div><div class="eyebrow">NOT MAGIC. JUST A GOOD IDEA.</div><h2 id="how-title">A shorter path to your data.</h2></div><p>Keep the things you reach for<br>right where you need them.</p></div>
+      <div class="steps-grid">
+        <article class="step-card"><div class="step-number">01 <span aria-hidden="true">↗</span></div><h3>Give it a key.</h3><p>A name, a session, a little JSON. Store a value with a key that makes sense to you.</p><code>SET user:42 '{"name":"Ada"}'</code></article>
+        <article class="step-card"><div class="step-number">02 <span aria-hidden="true">↗</span></div><h3>Skip the long way.</h3><p>Ask for the same key and read straight from memory. That's the idea behind a cache hit.</p><code>GET user:42</code></article>
+        <article class="step-card"><div class="step-number">03 <span aria-hidden="true">↗</span></div><h3>Let the old stuff go.</h3><p>Add an expiration. When time is up, the value steps aside and makes room for what's next.</p><code>SET session:42 "active" EX 60</code></article>
+      </div>
+    </section>
+
+    <section id="about" class="about-section shell"><div class="about-icon" aria-hidden="true">✳</div><div><div class="eyebrow">SMALL ON PURPOSE</div><h2>A playground, not a production promise.</h2><p>Ember is an independent learning project inspired by in-memory databases. Explore here, then dive into the Python RESP2 server when you're ready. Not affiliated with Redis.</p></div><a class="button button-outline" href="ARCHITECTURE.md">Read the architecture <span aria-hidden="true">↗</span></a></section>
+  </main>
+  <footer class="site-footer shell"><a class="brand" href="#">ember<span class="brand-dot">.</span></a><p>A little cache. A lot of possibility.</p><span>Built for curiosity, not production.</span><a href="#hero-title">Back to top ↑</a></footer>
+  <div id="announcement" class="sr-only" role="status" aria-live="polite"></div>
+</body>
+</html>
